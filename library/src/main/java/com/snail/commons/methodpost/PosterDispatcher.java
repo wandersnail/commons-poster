@@ -1,5 +1,6 @@
 package com.snail.commons.methodpost;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
@@ -28,10 +29,16 @@ public class PosterDispatcher {
         asyncPoster = new AsyncPoster(executorService);
     }
 
+    /**
+     * 获取默认运行线程
+     */
     public ThreadMode getDefaultMode() {
         return defaultMode;
     }
 
+    /**
+     * 获取线程池
+     */
     public ExecutorService getExecutorService() {
         return executorService;
     }
@@ -46,19 +53,37 @@ public class PosterDispatcher {
     }
 
     /**
-     * 根据方法上带的注解，将任务post到指定线程执行。如果方法上没有带注解，使用配置的默认值
+     * 根据方法上带的{@link RunOn}注解，将任务post到指定线程执行。如果方法上没有带注解，使用配置的默认值
      *
      * @param method   方法
      * @param runnable 要执行的任务
      */
     public void post(@Nullable Method method, @NonNull Runnable runnable) {
         if (method != null) {
-            RunOn annotation = method.getAnnotation(RunOn.class);
-            ThreadMode mode;
-            if (annotation == null) {
-                mode = defaultMode;
-            } else {
-                mode = annotation.value();
+            post(method, RunOn.class, runnable);
+        }
+    }
+
+    /**
+     * 根据方法上带的注解，将任务post到指定线程执行。如果方法上没有带注解，使用配置的默认值
+     *
+     * @param method   方法
+     * @param cls      方法上注解的字节码
+     * @param runnable 要执行的任务
+     */
+    public void post(@Nullable Method method, @NonNull Class<? extends Annotation> cls, @NonNull Runnable runnable) {
+        if (method != null) {
+            Annotation annotation = method.getAnnotation(cls);
+            ThreadMode mode = defaultMode;
+            if (annotation != null) {
+                try {
+                    Method m = annotation.getClass().getMethod("value");
+                    Object value = m.invoke(annotation);
+                    if (value instanceof ThreadMode) {
+                        mode = (ThreadMode) value;
+                    }
+                } catch (Exception ignore) {
+                }
             }
             post(mode, runnable);
         }
@@ -72,7 +97,7 @@ public class PosterDispatcher {
      */
     public void post(@NonNull ThreadMode mode, @NonNull Runnable runnable) {
         if (mode == ThreadMode.UNSPECIFIED) {
-            mode= defaultMode;
+            mode = defaultMode;
         }
         switch (mode) {
             case MAIN:
@@ -97,11 +122,24 @@ public class PosterDispatcher {
      * @param methodName 方法名
      * @param parameters 参数信息
      */
-    public void post(@NonNull final Object owner, @NonNull String methodName, @Nullable MethodInfo.Parameter... parameters) {
+    public void post(@NonNull Object owner, @NonNull String methodName, @Nullable MethodInfo.Parameter... parameters) {
+        post(owner, methodName, RunOn.class, parameters);
+    }
+
+    /**
+     * 将任务post到指定线程执行
+     *
+     * @param owner      方法的所在的对象实例
+     * @param methodName 方法名
+     * @param cls        方法上注解的字节码
+     * @param parameters 参数信息
+     */
+    public void post(@NonNull final Object owner, @NonNull String methodName, @NonNull Class<? extends Annotation> cls,
+                     @Nullable MethodInfo.Parameter... parameters) {
         if (parameters == null || parameters.length == 0) {
             try {
                 final Method method = owner.getClass().getMethod(methodName);
-                post(method, new Runnable() {
+                post(method, cls, new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -123,7 +161,7 @@ public class PosterDispatcher {
             }
             try {
                 final Method method = owner.getClass().getMethod(methodName, paramTypes);
-                post(method, new Runnable() {
+                post(method, cls, new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -143,8 +181,19 @@ public class PosterDispatcher {
      *
      * @param owner      方法的所在的对象实例
      * @param methodInfo 方法信息实例
+     * @param cls        方法上注解的字节码
+     */
+    public void post(@NonNull Object owner, @NonNull MethodInfo methodInfo, @NonNull Class<? extends Annotation> cls) {
+        post(owner, methodInfo.getName(), cls, methodInfo.getParameters());
+    }
+
+    /**
+     * 将任务post到指定线程执行
+     *
+     * @param owner      方法的所在的对象实例
+     * @param methodInfo 方法信息实例
      */
     public void post(@NonNull Object owner, @NonNull MethodInfo methodInfo) {
-        post(owner, methodInfo.getName(), methodInfo.getParameters());
+        post(owner, methodInfo.getName(), RunOn.class, methodInfo.getParameters());
     }
 }
