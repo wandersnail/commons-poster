@@ -17,13 +17,23 @@ public class PosterDispatcher {
     private final ThreadMode defaultMode;
     private final Poster backgroundPoster;
     private final Poster mainThreadPoster;
+    private final ExecutorService executorService;
     private final Poster asyncPoster;
 
     public PosterDispatcher(@NonNull ExecutorService executorService, @NonNull ThreadMode defaultMode) {
         this.defaultMode = defaultMode;
+        this.executorService = executorService;
         backgroundPoster = new BackgroundPoster(executorService);
         mainThreadPoster = new MainThreadPoster();
         asyncPoster = new AsyncPoster(executorService);
+    }
+
+    public ThreadMode getDefaultMode() {
+        return defaultMode;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
     /**
@@ -34,7 +44,7 @@ public class PosterDispatcher {
         mainThreadPoster.clear();
         asyncPoster.clear();
     }
-    
+
     /**
      * 根据方法上带的注解，将任务post到指定线程执行。如果方法上没有带注解，使用配置的默认值
      *
@@ -49,9 +59,6 @@ public class PosterDispatcher {
                 mode = defaultMode;
             } else {
                 mode = annotation.value();
-                if (mode == ThreadMode.UNSPECIFIED) {
-                    mode = defaultMode;
-                }
             }
             post(mode, runnable);
         }
@@ -64,6 +71,9 @@ public class PosterDispatcher {
      * @param runnable 要执行的任务
      */
     public void post(@NonNull ThreadMode mode, @NonNull Runnable runnable) {
+        if (mode == ThreadMode.UNSPECIFIED) {
+            mode= defaultMode;
+        }
         switch (mode) {
             case MAIN:
                 mainThreadPoster.enqueue(runnable);
@@ -85,7 +95,7 @@ public class PosterDispatcher {
      *
      * @param owner      方法的所在的对象实例
      * @param methodName 方法名
-     * @param parameters      参数信息
+     * @param parameters 参数信息
      */
     public void post(@NonNull final Object owner, @NonNull String methodName, @Nullable MethodInfo.Parameter... parameters) {
         if (parameters == null || parameters.length == 0) {
@@ -131,8 +141,8 @@ public class PosterDispatcher {
     /**
      * 将任务post到指定线程执行
      *
-     * @param owner 方法的所在的对象实例
-     * @param methodInfo  方法信息实例
+     * @param owner      方法的所在的对象实例
+     * @param methodInfo 方法信息实例
      */
     public void post(@NonNull Object owner, @NonNull MethodInfo methodInfo) {
         post(owner, methodInfo.getName(), methodInfo.getParameters());

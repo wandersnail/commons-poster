@@ -2,8 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'maven'
 
-def lib_version = '1.0.1'
-group = "com.github.wandersnail"
+def lib_version = '1.0.2'
+def lib_group = 'com.github.wandersnail'
+def lib_artifact = 'commons-method-poster'
+def lib_packaging = 'aar'
+def lib_description = 'commons-method-poster for Android'
+group = lib_group
 version = lib_version
 
 android {
@@ -34,11 +38,11 @@ dependencies {
 publish {
     repoName="android"//仓库名
     userOrg = 'wandersnail' //bintray.com用户名  
-    groupId = 'com.github.wandersnail' //jcenter上的路径  
-    artifactId = 'commons-method-poster' //项目名称  
-    publishVersion = "$lib_version" //版本号  
-    desc = 'commons-method-poster for Android'
-    website = 'https://github.com/wandersnail/commons'
+    groupId = lib_group //jcenter上的路径  
+    artifactId = lib_artifact //项目名称  
+    publishVersion = lib_version //版本号  
+    desc = lib_description
+    website = 'https://github.com/wandersnail/commons-method-poster'
 }
 
 if (project.getGradle().startParameter.taskNames.any { it.contains('bintrayUpload') }) {
@@ -51,17 +55,17 @@ if (project.getGradle().startParameter.taskNames.any { it.contains('bintrayUploa
             pom {
                 //noinspection GroovyAssignabilityCheck
                 project {
-                    name "commons-method-poster"
-                    artifactId 'commons-method-poster'
-                    packaging 'aar'
-                    description 'commons-method-poster lib for Android'
-                    url 'https://github.com/wandersnail'
+                    name lib_artifact
+                    artifactId lib_artifact
+                    packaging lib_packaging
+                    description lib_description
                     version lib_version
+                    url 'https://github.com/wandersnail'
 
                     scm {
-                        url 'https://github.com/wandersnail/commons'
-                        connection 'scm:git:https://github.com/wandersnail/commons.git'
-                        developerConnection 'scm:git:https://github.com/wandersnail/commons.git'
+                        url 'https://github.com/wandersnail/commons-method-poster'
+                        connection 'scm:git:https://github.com/wandersnail/commons-method-poster.git'
+                        developerConnection 'scm:git:https://github.com/wandersnail/commons-method-poster.git'
                     }
 
                     licenses {
