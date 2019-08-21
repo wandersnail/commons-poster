@@ -1,13 +1,14 @@
-package com.snail.commons.methodpost;
+package cn.wandersnail.commons.poster;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import androidx.annotation.NonNull;
 
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import androidx.annotation.NonNull;
 
 /**
  * date: 2019/8/7 10:45

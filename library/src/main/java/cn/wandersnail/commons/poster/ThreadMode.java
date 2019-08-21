@@ -1,4 +1,4 @@
-package com.snail.commons.methodpost;
+package cn.wandersnail.commons.poster;
 
 /**
  * 线程策略

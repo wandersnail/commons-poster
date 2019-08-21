@@ -1,4 +1,4 @@
-package com.snail.commons.methodpost;
+package cn.wandersnail.commons.poster;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -139,14 +139,11 @@ public class PosterDispatcher {
         if (parameters == null || parameters.length == 0) {
             try {
                 final Method method = owner.getClass().getMethod(methodName);
-                post(method, cls, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            method.invoke(owner);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
+                post(method, cls, () -> {
+                    try {
+                        method.invoke(owner);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
                     }
                 });
             } catch (Exception ignore) {
@@ -161,14 +158,11 @@ public class PosterDispatcher {
             }
             try {
                 final Method method = owner.getClass().getMethod(methodName, paramTypes);
-                post(method, cls, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            method.invoke(owner, params);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
+                post(method, cls, () -> {
+                    try {
+                        method.invoke(owner, params);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
                     }
                 });
             } catch (Exception ignore) {

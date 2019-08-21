@@ -1,25 +1,48 @@
 ## 代码托管
-[![](https://jitpack.io/v/wandersnail/commons-method-poster.svg)](https://jitpack.io/#wandersnail/commons-method-poster)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.wandersnail/commons-method-poster/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.wandersnail/commons-method-poster)
-[![Download](https://api.bintray.com/packages/wandersnail/android/commons-method-poster/images/download.svg) ](https://bintray.com/wandersnail/android/commons-method-poster/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/cn.wandersnail/commons-poster/badge.svg)](https://maven-badges.herokuapp.com/maven-central/cn.wandersnail/commons-poster)
+[![Download](https://api.bintray.com/packages/wandersnail/android/commons-poster/images/download.svg) ](https://bintray.com/wandersnail/android/commons-poster/_latestVersion)
 
 
 ## 使用
-
-1. module的build.gradle中的添加依赖，自行修改为最新版本，需要哪个就依赖哪个，同步后通常就可以用了：
+2. 因为使用了jdk8的一些特性，需要在module的build.gradle里添加如下配置：
 ```
-dependencies {
-	...
-	implementation 'com.github.wandersnail:commons-method-poster:latestVersion'
+//纯java的项目
+android {
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+}
+
+//有kotlin的项目还需要在project的build.gradle里添加
+allprojects {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+
+        kotlinOptions {
+            jvmTarget = '1.8'
+            apiVersion = '1.3'
+            languageVersion = '1.3'
+        }
+    }
 }
 ```
 
-2. 如果从jcenter下载失败。在project的build.gradle里的repositories添加内容，最好两个都加上，有时jitpack会抽风，同步不下来。添加完再次同步即可。
+2. module的build.gradle中的添加依赖，自行修改为最新版本，需要哪个就依赖哪个，同步后通常就可以用了：
+```
+dependencies {
+	...
+	implementation 'cn.wandersnail:commons-poster:latestVersion'
+}
+```
+
+3. 如果从jcenter下载失败。在project的build.gradle里的repositories添加内容，最好两个都加上，添加完再次同步即可。
 ```
 allprojects {
 	repositories {
 		...
-		maven { url 'https://jitpack.io' }
+		mavenCentral()
 		maven { url 'https://dl.bintray.com/wandersnail/android/' }
 	}
 }
