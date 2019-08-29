@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 标记方法执行线程
+ * 方法TAG，可用于方法被混淆后的标识
  * <p>
  * date: 2019/8/2 23:53
  * author: zengfansheng
@@ -15,9 +15,6 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface RunOn {
-    /**
-     * 运行线程
-     */
-    ThreadMode value() default ThreadMode.UNSPECIFIED;
+public @interface Tag {
+    String value() default "";
 }
