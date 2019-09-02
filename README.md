@@ -50,6 +50,4 @@ allprojects {
 
 ## 功能
 
-- SharedPreferences、Log、UI、图片、数学、文件操作、加密、网络、日期、数据库等工具类
-- wifi、Toast、zip、存储帮助类
-- 一些基类
+- 方法执行线程控制
