@@ -4,7 +4,7 @@
 
 
 ## 使用
-2. 因为使用了jdk8的一些特性，需要在module的build.gradle里添加如下配置：
+1. 因为使用了jdk8的一些特性，需要在module的build.gradle里添加如下配置：
 ```
 //纯java的项目
 android {
